@@ -22,4 +22,5 @@ public class Session {
     private String ip;
     private String browser;
     private String token;
+    private boolean enabled;
 }

@@ -24,4 +24,5 @@ public class Recipe {
     //Porciones
     private int servings;
     private String image;
+    private boolean enabled;
 }

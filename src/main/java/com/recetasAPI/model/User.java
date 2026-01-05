@@ -1,5 +1,6 @@
 package com.recetasAPI.model;
 
+import com.recetasAPI.model.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,7 +20,7 @@ public class User {
     @Id
     private String id;
     private String name;
-    private String surname;
+    private String surnames;
     @Indexed(unique = true)
     private String email;
     @Indexed(unique = true)
@@ -28,4 +29,6 @@ public class User {
     private LocalDateTime createdAt;
     private List<String> favorites;
     private String image;
+    private Role role;
+    private Boolean enabled;
 }

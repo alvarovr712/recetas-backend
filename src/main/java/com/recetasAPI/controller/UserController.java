@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -19,13 +21,14 @@ public class UserController {
     private UserService userService;
 
     @PostMapping("/crear")
-    public Mono<ResponseEntity<User>> createUser(@RequestBody User user) {
+    public Mono<ResponseEntity<Object>> createUser(@RequestBody User user) {
         return userService.crearUsuario(user)
-                .map(savedUser ->
-                        ResponseEntity
-                                .status(HttpStatus.CREATED)
-                                .body(savedUser)
-                );
+                .map(savedUser -> ResponseEntity.status(HttpStatus.CREATED).<Object>body(savedUser))
+                .onErrorResume(e -> {
+                    e.printStackTrace(); // Log full stack trace for debugging
+                    Map<String, String> errorBody = Map.of("error", e.getMessage());
+                    return Mono.just(ResponseEntity.badRequest().<Object>body(errorBody));
+                });
     }
 
 }
