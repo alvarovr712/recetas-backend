@@ -1,15 +1,13 @@
 package com.recetasAPI.controller;
 
 import com.recetasAPI.model.dtos.LoginRequest;
+import com.recetasAPI.model.dtos.UserInfoDTO;
 import com.recetasAPI.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -46,5 +44,10 @@ public class AuthController {
                 .onErrorResume(ex -> Mono.just(
                         ResponseEntity.badRequest().body(ex.getMessage())
                 ));
+    }
+
+    @GetMapping("/me")
+    public Mono<UserInfoDTO> getCurrentUser() {
+        return authService.getCurrentUserInfo();
     }
 }
