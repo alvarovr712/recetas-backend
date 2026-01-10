@@ -32,8 +32,9 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtil jwtUtil;
 
     @Override
-    public Mono<String> login(LoginRequest loginRequest, String ip,String browser) {
-        return userRepository.findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail())
+    public Mono<String> login(LoginRequest loginRequest, String ip, String browser) {
+        return userRepository
+                .findByUsernameOrEmail(loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail())
                 .switchIfEmpty(Mono.error(new RuntimeException("Usuario no encontrado")))
                 .flatMap(user -> {
                     if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
@@ -76,9 +77,7 @@ public class AuthServiceImpl implements AuthService {
                             .orElse("USER");
 
                     return Mono.just(new UserInfoDTO(username, Role.valueOf(role)));
-                })
-                .switchIfEmpty(Mono.error(new RuntimeException("No authentication found")));
+                });
     }
 
 }
-
