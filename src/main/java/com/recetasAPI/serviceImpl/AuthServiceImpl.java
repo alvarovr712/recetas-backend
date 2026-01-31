@@ -9,7 +9,9 @@ import com.recetasAPI.repository.UserRepository;
 import com.recetasAPI.security.JwtUtil;
 import com.recetasAPI.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -64,19 +66,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public Mono<UserInfoDTO> getCurrentUserInfo() {
         return ReactiveSecurityContextHolder.getContext()
-                .map(securityContext -> securityContext.getAuthentication())
-                .flatMap(auth -> {
-                    if (auth == null || !auth.isAuthenticated()) {
-                        return Mono.empty();
-                    }
+                .map(SecurityContext::getAuthentication)
+                .filter(auth -> auth != null && auth.isAuthenticated())
+                .map(auth -> {
                     String username = auth.getName();
-
-                    String role = auth.getAuthorities().stream()
+                    String roleStr = auth.getAuthorities().stream()
                             .findFirst()
-                            .map(grantedAuthority -> grantedAuthority.getAuthority().replace("ROLE_", ""))
+                            .map(ga -> ga.getAuthority().replace("ROLE_", ""))
                             .orElse("USER");
 
-                    return Mono.just(new UserInfoDTO(username, Role.valueOf(role)));
+                    return new UserInfoDTO(username, Role.valueOf(roleStr));
                 });
     }
 
@@ -90,5 +89,4 @@ public class AuthServiceImpl implements AuthService {
                 })
                 .then();
     }
-
 }

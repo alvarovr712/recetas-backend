@@ -10,10 +10,12 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256); // Genera clave secreta segura
+    // Clave estática para que los tokens sigan siendo válidos tras reiniciar el
+    // servidor
+    private final String SECRET = "esta-es-una-clave-secreta-muy-larga-y-segura-para-jwt-1234567890-sazon-app";
+    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes());
 
-    private final long expirationMillis = 3600000; //Una semana
-
+    private final long expirationMillis = 3600000; // 1 hora para pruebas
 
     public String generateToken(String userId) {
         return Jwts.builder()
