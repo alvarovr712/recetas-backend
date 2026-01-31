@@ -80,4 +80,15 @@ public class AuthServiceImpl implements AuthService {
                 });
     }
 
+    @Override
+    public Mono<Void> logout(String token) {
+        return sessionRepository.findByTokenAndEnabledTrue(token)
+                .flatMap(session -> {
+                    session.setEnabled(false);
+                    session.setExpiresAt(LocalDateTime.now());
+                    return sessionRepository.save(session);
+                })
+                .then();
+    }
+
 }

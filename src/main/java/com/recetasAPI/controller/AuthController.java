@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -51,5 +52,22 @@ public class AuthController {
                 return authService.getCurrentUserInfo()
                                 .map(ResponseEntity::ok)
                                 .defaultIfEmpty(ResponseEntity.status(401).build());
+        }
+
+        @PostMapping("/logout")
+        public Mono<ResponseEntity<Void>> logout(@CookieValue("JWT") String token,
+                        ServerHttpResponse response) {
+                return authService.logout(token)
+                                .then(Mono.fromRunnable(() -> {
+                                        ResponseCookie deleteCookie = ResponseCookie.from("JWT", "")
+                                                        .httpOnly(true)
+                                                        .secure(true)
+                                                        .path("/")
+                                                        .maxAge(0)
+                                                        .sameSite("Strict")
+                                                        .build();
+                                        response.addCookie(deleteCookie);
+                                }))
+                                .thenReturn(ResponseEntity.ok().build());
         }
 }

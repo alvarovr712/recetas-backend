@@ -8,4 +8,5 @@ public interface AuthService {
 
     Mono<String> login(LoginRequest loginRequest,String ip,String browser);
     Mono<UserInfoDTO> getCurrentUserInfo();
+    Mono<Void> logout(String token);
 }
