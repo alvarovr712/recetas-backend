@@ -1,5 +1,6 @@
 package com.recetasAPI.model;
 
+import com.recetasAPI.model.enums.RecipeType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,7 @@ public class Recipe {
     private String description;
     private List<String> ingredients;
     private List<String> steps;
+    private RecipeType type;
     private int prepTime;
     //Porciones
     private int servings;
